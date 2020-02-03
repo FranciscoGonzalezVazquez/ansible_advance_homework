@@ -1,4 +1,5 @@
 ---
+
 # tasks file for osp.servers
 - name: Create new server instances and attaches them a network and passes metadata to the instance
   os_server:
@@ -23,8 +24,22 @@
     - "{{ osp_servers.frontend }}"
     - "{{ osp_servers.app1 }}"
     - "{{ osp_servers.app2 }}"
-    - "{{ osp_servers.db }}"
-  register: create_instance_register
+    - "{{ osp_servers.db }}"     
+  async: 900
+  poll: 0
+  register: r_instances
+
+- name: Wait for OSP instance creation to complete
+  async_status: jid={{ item.ansible_job_id }}
+  register: r_wait
+  until: r_wait.finished
+  retries: 900
+  loop: "{{ r_instances.results }}"
+
+#- name: Debug instances 
+#  debug:
+#    msg: "Server is {{ item.item.instance_name }}"
+#  loop: "{{ r_instances.results }}"
 
 - name: Add floating IP to Servers
   os_floating_ip:
@@ -40,16 +55,18 @@
     - "{{ osp_servers.app1 }}"
     - "{{ osp_servers.app2 }}"
     - "{{ osp_servers.db }}"  
-  register: floating_instance_register
+  register: r_floating_ips
 
-#- name: Show server public IP
-#    debug: var=item.floating_ip.floating_ip_address
-#  loop: "{{ floating_instance_register.results }}"
+- name: debug task to output register  
+  debug:
+    msg: " instance ip register is {{ r_floating_ips.results }}"
 
-#- name: Debug instances 
-#  debug:
-#    msg: "Server is {{ item.item.instance_name }}"
-#  loop: "{{ create_instance_register.results }}"
+- name: Show public IP
+  debug: 
+#    verbosity: 2
+#    msg: "Floating IP is {{ item.item }}"
+    msg: "Floating IP is {{ item.floating_ip.floating_ip_address }}"
+  loop: "{{ r_floating_ips.results }}"
 
 - name: Wait for server to be available
   wait_for:
@@ -57,6 +74,5 @@
     port: 22
     search_regex: OpenSSH
     timeout: 600
-  loop: "{{ floating_instance_register.results }}"
+  loop: "{{ r_floating_ips.results }}"
   delegate_to: "{{ inventory_hostname }}"
-
