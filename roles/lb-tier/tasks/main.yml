@@ -11,7 +11,8 @@
 
 - name: Configure haproxy to load balance over app servers
   template:
-    src: haproxy.cfg.j2
+#    src: haproxy.cfg.j2
+    src: /root/ansible_advance_homework/roles/lb-tier/templates/haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     mode: 0644
 
