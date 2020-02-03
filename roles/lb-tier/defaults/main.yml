@@ -1,2 +1,2 @@
 ---
-load_balancer: haproxy
+# defaults file for lb-tier
