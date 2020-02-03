@@ -1,5 +1,5 @@
 ---
-# tasks file for lb-tier
+
 - name: install {{ payload }}
   yum:
     name: "{{ payload }}"
@@ -10,14 +10,18 @@
     name: "{{ payload }}"
     enabled: yes
 
-- name: configure haproxy to load balance over app servers
+- name: create tomcat default web directory
+  file:
+    path: "{{ tomcat_web_root }}"
+    state: directory
+
+- name: copy static index.html to tomcat webroot
   template:
-    src: haproxy.cfg.j2
-    dest: /etc/haproxy/haproxy.cfg
+    src: index.html.j2
+    dest: "{{ tomcat_web_root }}/index.html"
     mode: 0644
 
-- name: start {{ payload }}
+- name: restart tomcat
   service:
     name: "{{ payload }}"
     state: restarted
-

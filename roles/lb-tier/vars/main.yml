@@ -1,3 +1,2 @@
----
-# vars file for lb-tier
-payload: haproxy
+payload:          tomcat
+tomcat_web_root:  /usr/share/tomcat/webapps/ROOT
