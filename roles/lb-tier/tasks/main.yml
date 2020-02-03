@@ -1,27 +1,21 @@
 ---
+- name: Install {{ load_balancer }}
+  package:
+    name: "{{ load_balancer }}"
+    state: present
 
-- name: install {{ payload }}
-  yum:
-    name: "{{ payload }}"
-    state: latest
-
-- name: enable {{ payload }} at boot
+- name: Enable {{ load_balancer }} at boot
   service:
-    name: "{{ payload }}"
+    name: "{{ load_balancer }}"
     enabled: yes
 
-- name: create tomcat default web directory
-  file:
-    path: "{{ tomcat_web_root }}"
-    state: directory
-
-- name: copy static index.html to tomcat webroot
+- name: Configure haproxy to load balance over app servers
   template:
-    src: index.html.j2
-    dest: "{{ tomcat_web_root }}/index.html"
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
     mode: 0644
 
-- name: restart tomcat
+- name: Start {{ load_balancer }}
   service:
-    name: "{{ payload }}"
+    name: "{{ load_balancer }}"
     state: restarted
