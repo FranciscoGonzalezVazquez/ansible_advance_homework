@@ -21,12 +21,12 @@
 
 - name: Check var pgdata_dir_version
   debug:
-    msg: "{{ pgdata_dir_version.stat.exists }} postgresql_user: {{ postgresql_user }}"
+    msg: "{{ pgdata_dir_version.stat.exists }} postgresql_user: {{ postgresql_user }} postgresql_bin_path: {{ postgresql_bin_path }} postgresql_data_dir: {{ postgresql_data_dir }}"
 
 - name: Ensure PostgreSQL database is initialized.
   shell: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
   when: not pgdata_dir_version.stat.exists
-  become: yes
+#  become: yes
   become_user: "{{ postgresql_user }}"
   # See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
   vars:
