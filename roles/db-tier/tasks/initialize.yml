@@ -21,9 +21,10 @@
 
 - name: Check var pgdata_dir_version
   debug:
-    msg: "{{ pgdata_dir_version.stat.exists }}"
+    msg: "{{ pgdata_dir_version.stat.exists }} postgresql_user: {{ postgresql_user }}"
+
 - name: Ensure PostgreSQL database is initialized.
-  command: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
+  shell: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
   when: not pgdata_dir_version.stat.exists
   become: yes
   become_user: "{{ postgresql_user }}"
