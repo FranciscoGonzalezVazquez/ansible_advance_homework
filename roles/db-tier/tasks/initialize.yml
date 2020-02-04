@@ -19,6 +19,9 @@
     path: "{{ postgresql_data_dir }}/PG_VERSION"
   register: pgdata_dir_version
 
+- name: Check var pgdata_dir_version
+  debug:
+    msg: "{{ pgdata_dir_version.stat.exists }}"
 - name: Ensure PostgreSQL database is initialized.
   command: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
   when: not pgdata_dir_version.stat.exists
