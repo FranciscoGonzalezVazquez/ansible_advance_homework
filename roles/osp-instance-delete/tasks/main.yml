@@ -3,8 +3,8 @@
 - name: Fetch Instance Info
   os_server_facts:
     cloud: ospcloud
-  register: r_servers
-
+  register: result
+ 
 - name: Delete instances
   os_server:
     cloud: ospcloud
@@ -12,4 +12,4 @@
     state: absent
     reuse_ips: yes
     terminate_volume: yes
-  loop: "{{ r_servers.ansible_facts.openstack_servers }}"  
+  loop: "{{ result.ansible_facts.openstack_servers }}"
